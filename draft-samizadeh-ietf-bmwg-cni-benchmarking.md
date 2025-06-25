@@ -105,14 +105,17 @@ The Container Network Interface (CNI) plays a key role in managing network conne
 - calico
 - Cillium
 - Flannel
--...
+- WeaveNet
+- Kube-router
+- Antrea
+- ...
 
 ## How K8s Relies in CNIs
 
 
 # CNI Benchmarking
 ## Performance Metrics and Aspects
-to evaluate the performance, there are several metrics that should be taken into account including network throughput, end-to-end latency and resource (CPU and Memory) utilization  
+To evaluate the performance, there are several metrics that should be taken into account including network throughput, end-to-end latency, CPU and Memory utilization.  
 ### QoS
 ### QoE
 ### Deployment and Deletion Times
