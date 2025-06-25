@@ -92,6 +92,8 @@ In this document, these words will appear with that interpretation   only when i
 
 
 # Fundamentals of CNI Benchmarking
+The Container Network Interface (CNI) plays a key role in managing network connectivity between containers and enables the seamless integration of networking solutions within orchestration platforms such as Kubernetes.
+
 ## Overview and Relevance in the Context of Telco-Cloud Environments
 
 ## Container Network Interfaces in Kubernets
@@ -110,6 +112,7 @@ In this document, these words will appear with that interpretation   only when i
 
 # CNI Benchmarking
 ## Performance Metrics and Aspects
+to evaluate the performance, there are several metrics that should be taken into account including network throughput, end-to-end latency and resource (CPU and Memory) utilization  
 ### QoS
 ### QoE
 ### Deployment and Deletion Times
