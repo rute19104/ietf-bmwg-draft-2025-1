@@ -118,7 +118,9 @@ The Container Network Interface (CNI) plays a key role in managing network conne
 Considering the architecture of microservice-based applications, microservices may interact with each outer and external services. Having containerized applications and orhestration platforms like Kubernets, there is a need to address communiation and networking as Kubernetes doesn't handle networking itself. Moreover, communication between containers is extremly important to meet QoS requirements of application.
 To evaluate the performance of CNIs there are several metrics that should be taken into account including network throughput, end-to-end latency, Pod startup, CPU and Memory utilization, and packet delays and losses. 
 ### QoS
-Measuring the QoS that mostly focuses on traditional performance metrics like latency, handling various network configurations
+Measuring the QoS that mostly focuses on traditional performance metrics like latency and handling various network configurations.
+TCP_RR measures how fast requests and responses are exchanged over a single TCP connection.
+TCP_CRR tests how quickly new TCP connections can be opened, used, and closed.
 ### QoE
 Quality of Experience (QoE) benchmarking for evaluating CNI plugins is beyond measing the performance metrics, It is more focused on evaluating that how effectively a CNI can enhance the overall user experience. For instance, time to deploy or configure the CNI, ease of troubleshooting, and impact of the CNI on application performance.
 ### Deployment and Deletion Times
