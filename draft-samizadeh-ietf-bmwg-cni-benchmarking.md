@@ -101,17 +101,30 @@ The Container Network Interface (CNI) plays a key role in managing network conne
 ## Relevancy of Kubernetes Networking in Telco-Cloud Environments
 
 ## Overview of Main CNIs
-- Multus
-- calico
-- Cillium
-- Flannel
-- WeaveNet
-- Kube-router
-- Antrea
-- ...
+This section categorizes CNI models based on four main categories, the: i) Main and single interface–plugins; ii) Standard 3rd party plugins or normal non-acceleration networking models; iii) Multi-network meta-plugins or acceleration networking models; and iv) Cloud-specific.
+i) Main and single interface–plugins: Create or move an interface into the pod and run IPAM, including the bridge, macvlan, host-device, sr-iov, as well as the portmap, bandwidth, tuning, firewall, sbr, vrf which run after the main plugin and tweak that one interface.
+ii) Standard 3rd party plugins or Normal Non-Acceleration Networking Models: the default container-networking setup that relies on a single CNI plugin, typically installed by applying its YAML manifest.
+    • Antrea: 
+    • Calico: Can enable eBPF to swap iptables for high-performance eBPF datapath.
+    • Cillium (eBPF)1: In the case of the eBPF/XDP offloading container network, Cilium CNI with its eBPF offloading feature.
+    • Flannel: Focuses on simplicity, creating VXLAN and often paired with Calico (for policy enforcement) composing Canal.
+    • Kube-ovn: OVN-based SDN 
+    • Kube-router: BGP + IPVS; lightweight
+    • WeaveNet:
+iii) Multi-network meta-plugins or Acceleration Networking Models: combine multiple CNI plugins, utilizing at least two network interfaces. A standard CNI sets up the primary interface, managing IP address allocation and traffic, while additional CNIs attach secondary interfaces.
+    • Multus: allows for the attachment of multiple network interfaces to a pod extending the default cluster networking model to support multi-homed pods. It achieves this by interpreting one or more NetworkAttachmentDefinition CRD referenced by a pod, enabling advanced topology management and network flexibility.
+    • Kaktus2: uses the Multus code-base but adds deterministic NIC device naming.
+    • DANM: integration with Nokia’s Telco stack 
+    • CNI-Genie: archived since March 2025.
+iv) Cloud-specific
+    • Terway: 
+    • VPC: 
+    • Contrail:
+    • Contiv: 
+    • ACI: 
 
 ## How K8s Relies in CNIs
-
+The CNI is a set of specifications and libraries that defines how container runtimes should configure network interfaces for containers and manage their connectivity. In these lines, CNIs are essential components in K8s to implement the K8s network model1, providing a standardized and container runtime agnostic way to configure network interfaces within containers and networks. In practice, they function as the intermediary layer that connects the K8s control plane to the cluster’s underlying network infrastructure. From a networking perspective, since a pod or container lacks network connectivity when first created, K8s relies on a CNI plugin to attach a virtual network interface inside the container’s namespace, link that interface to the host’s networking stack, assign an IP address, set up network policies for isolation and install the appropriate routing information according to the cluster’s IPAM strategy. Therefore, it enables seamless communication between pods in the cluster using pod IP addresses without NAT, with external networks and the outside world. Based on the way each implementation uses underlying technologies and routing (overlay/underlay), enforces policies (layer 3/4/7), and interacts with the kernel (eBPF), CNIs can be grouped into distinct networking models as shown in Section 4.4. These design choices affect the benchmarking performance of the CNIs in different scenarios and workloads, as well as the complete containerized infrastructure.
 
 # CNI Benchmarking
 ## Performance Metrics and Aspects
@@ -131,10 +144,15 @@ Quality of Experience (QoE) benchmarking for evaluating CNI plugins is beyond me
 ## Observability and Bottleneck Detection
 
 # CODECO Experimentation Framework Methodology
+The CODECO Experimentation Framework (CODEF) is a novel open-source solution designed under the CODECO project to accelerate the experimentation of containerized edge-cloud deployments. CODEF follows a micro-service philosophy and architecture introducing advanced abstractions aimed at reducing experimentation complexity, increasing automation, and improving reliability.
+CODEF’s architecture is composed of four abstraction layers that collectively span the entire experimental workflow, each implemented as an independent microservice/container. This design allows the framework to integrate additional technologies and features ensuring modularity and extensibility. The Infrastructure Managers allocate cluster nodes over heterogeneous edge-cloud systems, including bare-metal physical nodes, hypervisor-based virtual machines (VirtualBox, XCP-ng), and cloud testbeds (AWS, CloudLab, EdgeNet). The Resource Managers oversee the automated deployment of software and applications on allocated nodes based on custom Ansible playbook templates. Once cluster nodes are allocated, a dedicated Resource Manager is deployed for each node to ensure efficient software deployment and management. The Experiment Controller automates experiments’ execution by managing experiment iterations, metrics collection and result generation, while the Results Processor offers statistical analysis, post-processing and report generation.
+CODEF offers a holistic and declarative approach with complete experimentation automation, from cluster deployment to experiment execution and results processing. The instantiation of cluster nodes from scratch based on OS images guarantees that every cluster is built from a known baseline, therefore each experiment is conducted in a clean environment ensuring no remnants of previous runs remain. This also ensures replicability of experiments with all clusters being identical. Low level parameterization is also available for various networking and security options like tunneling and encapsulation mechanisms such as VXLAN, Geneve or IP-in-IP, encryption schemes including IPsec and WireGuard or kernel-based options like eBPF/XDP data paths.
 ## CODEF Overview and CNI Support
+CODEF addresses the requirements for repeatable, infrastructure-agnostic benchmarking across the edge-cloud continuum. It supports a wide range of 3rd party CNI plugins like Antrea, Calico, Cilium, Flannel, Weavenet, Kube-router, Kube-ovn and Multus as well as out-of-the-box network solutions like L2S-M [1]. These CNIs can be evaluated within multiple Kubernetes distributions (e.g., vanilla K8s, K3s, K0s, MicroK8s). Since each plugin employs distinct network layer options (underlay and/or overlay) and exposes different feature sets such as enhanced security or encryption mechanisms, programmable data-paths, and granular network-policy enforcement, the resulting performance characteristics may vary. CODEF therefore provides a consistent end-to-end methodology for comparing these alternatives under equivalent test conditions. 
 ## Environment Configuration Aspects
+Besides the distinct characteristics of each CNI implementation, a benchmarking methodology must also account for architectural and physical variables such as VM/hypervisor or bare-metal deployments, intra- or inter-node scenarios, and the differences between vanilla or production-grade K8s distributions compared to those designed specifically for the edge. Hardware diversity also, adds another layer of complexity - CPU architecture, core and thread counts, cache hierarchy, memory type and speed, NUMA layout, NIC models and firmware - and low-level settings such as tunnelling mode, MTU, or eBPF tweaks that depart from their defaults can all alter performance outcomes. Experiments conducted with CODEF under a variety of conditions i.e., different intra- and inter-cluster scenarios with different hardware specs [], across various K8s distributions, employing different low-level tunneling parameters [] or when applying high load/stress and workloads [] showed significant performance variability. Disparities observed not only among across different CNI plugins on the same distribution, but also within a single plugin when ported to different K8s distributions. Some key observations showed that deploying lightweight plugins on edge-focused K8s distributions does not automatically translate into better resource efficiency or higher performance. In practice, some plugins downscale their footprint with cost of performance e.g., by employing a different tunneling protocol, while others incur additional overhead and better network performance on vanilla K8s, a trade-off that should be considered. In addition, the optimal combination of plugin and distribution is highly workload-specific. A particular workload may achieve its best results with a configuration that is, on paper, more resource-intensive because it matches the workload’s operational profile. These trade-offs become even more critical in IoT and edge environments, where resource limitations make it imperative to extract maximum performance.
 ## Measurement Tools
-
+Through Ansible playbooks, CODEF automates the installation of a range of software and tools for both workload generation and measurement. It supports network-centric traffic generators such as iperf3, netperf, and sockperf, as well as comprehensive suites like the K8s-bench-suite1, allowing to measure bandwidth, throughput, and packet fragmentation behavior across TCP and UDP protocols and message sizes. Resource footprint is captured at node or container scope for CPU, memory, and disk, with observability stacks built on Prometheus and Grafana to provide live monitoring and historical dashboards. Load and stress tests such as the CNCF Kube-Burner alongside chaos-engineering tools can subject the cluster to scaled pressure and orchestrated fault scenarios revealing performance limits and resilience gaps. Power consumption can also be estimated through empirical models or specialized tools such as CNCF Kepler and Scamander, however, their accuracy ultimately depends on the underlying hardware counters (e.g., bare-metal, RAPL) and their prediction models especially on virtualized or non-Intel systems.
 
 ...
 
