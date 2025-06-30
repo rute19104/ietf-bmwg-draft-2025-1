@@ -98,6 +98,9 @@ The Container Network Interface (CNI) plays a key role in managing network conne
 
 ## Container Network Interfaces in Kubernets
 
+
+
+
 ## Relevancy of Kubernetes Networking in Telco-Cloud Environments
 
 ## Overview of Main CNIs
