@@ -43,14 +43,14 @@ author:
    country: Germany
    email: rs19104@gmail.com
   -
-   ins: xxx
-   name: xxx
-   org: xxx
+   ins: George Koukis
+   name: George Koukis
+   org: Athena
    street: xxx
    city: xxx
    code: xxx
    country: xxx
-   email: email
+   email: George.Koukis@athenarc.gr
 -
 
 normative:
