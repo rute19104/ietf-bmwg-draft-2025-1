@@ -187,3 +187,7 @@ This document has no IANA actions.
 # Acknowledgments
 {:numbered="false"}
 The research leading to this draft has been developed in the context of the Horizon Europe project Cognitive Decentralised Edge Cloud Orchestration (CODECO). the CODECO project has received funding from the European Commission programme Horizon Europe, under grant agreement number: 101092696.
+
+
+# Reference
+[1] L. F. Gonzalez, I. Vidal, F. Valera and D. R. Lopez, "Link Layer Connectivity as a Service for Ad-Hoc Microservice Platforms," in IEEE Network, vol. 36, no. 1, pp. 10-17, 2022, doi: 10.1109/MNET.001.2100363
