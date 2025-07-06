@@ -102,7 +102,9 @@ The Container Network Interface (CNI) plays a key role in managing network conne
 
 ## Overview of Main CNIs
 This section categorizes CNI models into four main categories based on their functional role and deployment scope:
+
 **1) Primary and single interface–plugins:** This category includes plugins that create or move a single network interface into the pod’s network namespace and assign it an IP address via their built-in IPAM logic. Examples include bridge, macvlan, host-device and sr-iov. After the primary plugin completes, chained plugins (for example portmap, bandwidth, tuning, firewall, sbr and vrf) may execute sequentially to refine NAT rules, adjust interface parameters, or apply policies to the same interface.
+
 **2) Standard Third-Party Plugins or Normal Non-Acceleration Networking Models [ietf-bmwg-04]:** This category includes the default container-networking setup, which relies on a single CNI plugin, typically installed by applying its YAML manifest. Examples include: 
 • Antrea: builds on Open vSwitch (OVS) with optional eBPF layer, provides feature-rich OVS datapath; 
 • Calico: uses iptables or nftables datapath by default, with an optional eBPF mode that replaces kube-proxy for higher performance, also offers rich policy and WireGuard/IP-in-IP/VXLAN encapsulation choices, focuses on scalability and rich features; 
@@ -111,11 +113,13 @@ This section categorizes CNI models into four main categories based on their fun
 • Kube-ovn: a cloud-native SDN, built on Open Virtual Network (OVN), supports logical switches, routers, and IPv6/dual-stack; 
 • Kube-router: leverages the Linux kernel’s BGP and IPVS to provide pod routing, service proxy, and network policy, prioritizes lightness;
 • WeaveNet: provides peer-to-peer mesh overlay with nodes auto-discovery and encrypts traffic, designed for ease of use in multi-cloud and edge scenarios (archived since June 2024).
+
 **3) Multi-network Meta-plugins or Acceleration Networking Models [ietf-bmwg-04]:** This category includes models that combine multiple CNI plugins and use at least two network interfaces. A standard CNI sets up the primary interface, managing IP address allocation and traffic, while additional CNIs attach secondary interfaces. Examples include: 
 • Multus: the de-facto meta-plugin, allows for the attachment of multiple network interfaces to a pod, interpreting one or more NetworkAttachmentDefinition CRDs, extending the default networking model to support multi-homed pods, enables advanced topology management and network flexibility; 
 • Kaktus: forked from Multus, adds a deterministic device-naming scheme (“net-<hash>”) so each secondary NIC maps to its NetworkAttachment, aims at high-performance fabrics where interface order can change; 
 • DANM: bundles its own CRDs, IPAM, and policy controllers to integrate with Nokia’s 5G/edge telco stack and to provision SR-IOV, IPvlan, or overlay networks with SLA awareness; 
 • CNI-Genie: let pods choose one of several third-party CNIs at deploy time (archived since March 2025).
+
 **4) Cloud-specific:** This category includes models that connect K8s networking directly into a Virtual Private Cloud (VPC) of the cloud provider, exposing the cloud capabilities inside the cluster. Examples include: Terway (Alibaba), Contrail/Tungsten Fabric, Contiv VPP (Cisco-led), ACI CNI (Cisco), AWS VPC CNI, Azure CNI, OCI VCN-Native CNI (Oracle) and OVN-Kubernetes overlays.
 
 ## How K8s Relies on CNIs
