@@ -195,7 +195,11 @@ The research leading to this draft has been developed in the context of the Hori
 
 # Reference
 [1] L. F. Gonzalez, I. Vidal, F. Valera and D. R. Lopez, "Link Layer Connectivity as a Service for Ad-Hoc Microservice Platforms," in IEEE Network, vol. 36, no. 1, pp. 10-17, 2022, doi: 10.1109/MNET.001.2100363
+
 [ietf-bmwg-04] draft-ietf-bmwg-containerized-infra-04
+
 [cilium21-bench] https://cilium.io/blog/2021/05/11/cni-benchmark 
+
 [GLOBECOM21-bench-k8s] S. K. N. Rao, F. Paganelli and A. Morton, "Benchmarking Kubernetes Container-Networking for Telco Usecases," 2021 IEEE Global Communications Conference (GLOBECOM), Madrid, Spain, 2021, pp. 1-7, doi: 10.1109/GLOBECOM46510.2021.9685803.
+
 [TNSM21-cni] S. Qi, S. G. Kulkarni and K. K. Ramakrishnan, "Assessing Container Network Interface Plugins: Functionality, Performance, and Scalability," in IEEE Transactions on Network and Service Management, vol. 18, no. 1, pp. 656-671, March 2021, doi: 10.1109/TNSM.2020.3047545.
