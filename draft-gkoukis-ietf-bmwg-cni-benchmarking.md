@@ -96,7 +96,7 @@ The Container Network Interface (CNI) plays a key role in managing network conne
 
 ## Overview and Relevance in the Context of Telco-Cloud Environments
 
-## Container Network Interfaces in Kubernets
+## Container Network Interfaces in Kubernetes
 
 
 
@@ -104,25 +104,31 @@ The Container Network Interface (CNI) plays a key role in managing network conne
 ## Relevancy of Kubernetes Networking in Telco-Cloud Environments
 
 ## Overview of Main CNIs
-This section categorizes CNI models based on four main categories, the:
-i) Primary and single interface–plugins: This category comprises plugins whose first task is to create (or move) a single network interface into the pod’s network namespace and assign it an IP address via their built-in IPAM logic. Some examples are bridge, macvlan, host-device, sr-iov. After the primary plugin finishes, “chained” plugins such as portmap, bandwidth, tuning, firewall, sbr, vrf may run in sequence to refine NAT rules, shape traffic, adjust interface parameters, or apply policy to that same interface.
-ii) Standard 3rd party plugins or Normal Non-Acceleration Networking Models [ietf-bmwg-04]: the default container-networking setup that relies on a single CNI plugin, typically installed by applying its YAML manifest. Such examples include: 
+This section categorizes CNI models into four main categories based on their functional role and deployment scope:
+1) Primary and single interface–plugins: This category includes plugins that create or move a single network interface into the pod’s network namespace and assign it an IP address via their built-in IPAM logic. Examples include bridge, macvlan, host-device and sr-iov. After the primary plugin completes, chained plugins (for example portmap, bandwidth, tuning, firewall, sbr and vrf) may execute sequentially to refine NAT rules, adjust interface parameters, or apply policies to the same interface.
+2) Standard Third-Party Plugins or Normal Non-Acceleration Networking Models [ietf-bmwg-04]: This category includes the default container-networking setup, which relies on a single CNI plugin, typically installed by applying its YAML manifest. Examples include: 
 • Antrea: builds on Open vSwitch (OVS) with optional eBPF layer, provides feature-rich OVS datapath; 
 • Calico:  uses iptables or nftables datapath by default, with an optional eBPF mode that replaces kube-proxy for higher performance, also offers rich policy and WireGuard/IP-in-IP/VXLAN encapsulation choices, focuses on scalability and rich features; 
 • Cillium: uses pure eBPF/XDP datapath bypassing iptables and adding built-in L3/4/7 observability (with the Hubble ui), network policy and encryption; 
 • Flannel: sets up default overlay VXLAN and is often paired with Calico (for policy enforcement) composing Canal, focuses on simplicity; 
 • Kube-ovn: a cloud-native SDN, built on Open Virtual Network (OVN), supports logical switches, routers, and IPv6/dual-stack; 
 • Kube-router: leverages the Linux kernel’s BGP and IPVS to provide pod routing, service proxy, and network policy, prioritizes lightness; • WeaveNet: provides peer-to-peer mesh overlay with nodes auto-discovery and encrypts traffic, designed for ease of use in multi-cloud and edge scenarios (archived since June 2024).
-iii) Multi-network meta-plugins or Acceleration Networking Models [ietf-bmwg-04]: combine multiple CNI plugins, utilizing at least two network interfaces. A standard CNI sets up the primary interface, managing IP address allocation and traffic, while additional CNIs attach secondary interfaces. Such examples include: 
+3) Multi-network Meta-plugins or Acceleration Networking Models [ietf-bmwg-04]: This category includes models that combine multiple CNI plugins and utilize at least two network interfaces. A standard CNI sets up the primary interface, managing IP address allocation and traffic, while additional CNIs attach secondary interfaces. Examples include: 
 • Multus: the de-facto meta-plugin, allows for the attachment of multiple network interfaces to a pod, interpreting one or more NetworkAttachmentDefinition CRDs, extending the default networking model to support multi-homed pods, enables advanced topology management and network flexibility; 
-• Kaktus : forked from Multus, adds a deterministic device-naming scheme (“net-<hash>”) so each secondary NIC maps to its NetworkAttachment, aims at high-performance fabrics where interface order can change; 
+• Kaktus: forked from Multus, adds a deterministic device-naming scheme (“net-<hash>”) so each secondary NIC maps to its NetworkAttachment, aims at high-performance fabrics where interface order can change; 
 • DANM: bundles its own CRDs, IPAM, and policy controllers to integrate with Nokia’s 5G/edge telco stack and to provision SR-IOV, IPvlan, or overlay networks with SLA awareness; 
-• CNI-Genie: let pods choose one of several 3rd party CNIs at deploy time (archived since March 2025).
-iv) Cloud-specific: connect K8s networking directly into a Virtual Private Cloud (VPC) of the cloud provider, exposing the cloud capabilities inside the cluster. Such examples include Terway (Alibaba), Contrail/Tungsten Fabric, Contiv VPP (Cisco-led), ACI CNI (Cisco), AWS VPC CNI, Azure CNI, OCI VCN-Native CNI (Oracle), OVN-Kubernetes overlay and more.
+• CNI-Genie: let pods choose one of several third-party CNIs at deploy time (archived since March 2025).
+4) Cloud-specific: This category includes models that connect K8s networking directly into a Virtual Private Cloud (VPC) of the cloud provider, exposing the cloud capabilities inside the cluster. Such examples include Terway (Alibaba), Contrail/Tungsten Fabric, Contiv VPP (Cisco-led), ACI CNI (Cisco), AWS VPC CNI, Azure CNI, OCI VCN-Native CNI (Oracle) and OVN-Kubernetes overlays.
 
 
 ## How K8s Relies in CNIs
-The CNI is a set of specifications and libraries that defines how container runtimes should configure network interfaces for containers and manage their connectivity. In these lines, CNIs are essential components in K8s to implement the K8s network model , providing a standardized and container runtime agnostic way to configure network interfaces within containers and networks. In practice, they function as the intermediary layer that connects the K8s control plane to the cluster’s underlying network infrastructure. From a networking perspective, since a pod or container lacks network connectivity when first created, K8s relies on a CNI plugin to attach a virtual network interface (e.g., a veth) inside the container’s namespace, link that interface to the host’s networking stack, assign an IP address, set up network policies for isolation and install the appropriate routing information according to the cluster’s IPAM strategy. Therefore, it enables seamless communication between pods in the cluster using pod IP addresses without NAT, with external networks and the outside world. Based on the way each implementation uses underlying technologies and routing (overlay/underlay), enforces policies (layer 3/4/7), and interacts with the kernel (eBPF), CNIs can be grouped into distinct networking models as shown in Section 6.4. These design choices SHOULD be considered into CNI performance benchmarking across varied workloads and deployment scenarios, and they SHOULD be evaluated within the context of the full containerized infrastructure to reflect real-world behavior.
+The CNI is a set of specifications and libraries that defines how container runtimes should configure network interfaces for containers and manage their connectivity. In these lines, CNIs are essential components in K8s to implement the K8s network model, providing a standardized and container runtime agnostic way to configure network interfaces within containers and networks. In practice, they function as the intermediary layer that connects the K8s control plane to the cluster’s underlying network infrastructure. From a networking perspective, since a pod or container lacks network connectivity when first created, K8s relies on a CNI plugin to:
+- attach a virtual network interface (e.g., a veth) inside the container’s namespace,
+- link that interface to the host’s networking stack,
+- assign an IP address,
+- set up network policies for isolation and
+- install the appropriate routing information according to the cluster’s IPAM strategy.
+Therefore, it enables seamless communication between pods in the cluster using pod IP addresses without NAT, with external networks and the outside world. Based on the way each implementation uses underlying technologies and routing (overlay/underlay), enforces policies (layer 3/4/7), and interacts with the kernel (eBPF), CNIs can be grouped into distinct networking models as shown in Section 6.4. These design choices SHOULD be considered into CNI performance benchmarking across varied workloads and deployment scenarios, and they SHOULD be evaluated within the context of the full containerized infrastructure to reflect real-world behavior.
 
 # CNI Benchmarking
 Several performance-benchmarking suites are already available from both CNI providers [cilium-bench], the open-source community [TNSM21-cni], [GLOBECOM21-bench-k8s] and IETF methodologies [ietf-bmwg-04]; a comprehensive evaluation SHOULD incorporate relevant performance metrics, scalability aspects and identify bottlenecks. Each experiment SHOULD be run at least five times with an adequate cooling time to ensure statistical accuracy and SHOULD measure the minimum, median, maximum, and 50th-, 90th- and 99th-percentile results. The testbed’s hardware, software versions, and topology MUST be documented to guarantee reproducibility.
