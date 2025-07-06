@@ -206,7 +206,7 @@ The research leading to this draft has been developed in the context of the Hori
 
 [L2S-M] L. F. Gonzalez, I. Vidal, F. Valera and D. R. Lopez, "Link Layer Connectivity as a Service for Ad-Hoc Microservice Platforms," in IEEE Network, vol. 36, no. 1, pp. 10-17, 2022, doi: 10.1109/MNET.001.2100363
 
-[ietf-bmwg-04] draft-ietf-bmwg-containerized-infra-04
+[ietf-bmwg-04] Tran, M. N., Rao, S., Lee, J., & Kim, Y. (2025, January 9). Considerations for benchmarking network performance in containerized infrastructures. Internet Engineering Task Force. https://datatracker.ietf.org/doc/draft-ietf-bmwg-containerized-infra/04/
 
 [cilium21-bench] https://cilium.io/blog/2021/05/11/cni-benchmark 
 
