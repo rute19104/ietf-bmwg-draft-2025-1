@@ -128,6 +128,7 @@ The CNI is a set of specifications and libraries that defines how container runt
 - assign an IP address,
 - set up network policies for isolation and
 - install the appropriate routing information according to the cluster’s IPAM strategy.
+
 Therefore, it enables seamless communication between pods in the cluster using pod IP addresses without NAT, with external networks and the outside world. Based on the way each implementation uses underlying technologies and routing (overlay/underlay), enforces policies (layer 3/4/7), and interacts with the kernel (eBPF), CNIs can be grouped into distinct networking models as shown in Section 6.4. These design choices SHOULD be considered into CNI performance benchmarking across varied workloads and deployment scenarios, and they SHOULD be evaluated within the context of the full containerized infrastructure to reflect real-world behavior.
 
 # CNI Benchmarking
