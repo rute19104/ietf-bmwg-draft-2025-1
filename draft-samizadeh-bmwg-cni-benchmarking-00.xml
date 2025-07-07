@@ -338,6 +338,48 @@ Following infrastructure allocation, the CODEF Resource Manager deploys software
 CODEF supports full automation of the experimentation lifecycle, from cluster instantiation to metric analysis. Each cluster is provisioned from clean operating system images to ensure consistency, repeatability, and environmental isolation across benchmark runs. This approach eliminates state leakage between tests and enhances comparability. The framework also provides low-level parameterization options for various networking and security configurations. These include tunneling and encapsulation mechanisms (e.g., VXLAN, Geneve, IP-in-IP), encryption protocols (e.g., IPsec, WireGuard), and Linux kernel-based datapath acceleration features (e.g., eBPF and XDP). Such flexibility supports the emulation of production-grade deployments across a wide range of container network interfaces (CNIs) and infrastructure types.
 </t>
 
+<figure anchor="fig-codef" title="CODECO Experimentation Framework">
+  <artwork><![CDATA[
+  +-------------------------------------------+
+  |  CODECO Experimentation Framework (CODEF) |
+  +-------------------------------------------+
+              |
+              v
+  +------------------------------------+     
+  |  Experiment and Cluster Definition |
+  +------------------------------------+                                          
+              |
+              v
+  +------------------------+
+  |   Experiment Manager   |
+  +------------------------+
+          |                   Container                Systems
+          | Deploy VMs+OS +---------------+     +-------------------+
+          +-------------> | Infrastr Mgrs |---> | physical,VM,cloud |
+          |               +---------------+     +-------------------+
+          | Deploy Resource Managers per node
+          |
+          |          Containers
+          |      +---------------+    +----------+
+          |----> | Resource MgrA |<-->|  Master  |      SW / App
+          |      +---------------+    +----------+    +---------+
+          |----> | Resource MgrB |<-->|  Worker1 |<-->| Ansible |
+          |      +---------------+    +----------+    +---------+
+          |----> | Resource MgrC |<-->|  WorkerX |
+          |      +---------------+    +----------+
+          |
+          |                   Container
+          | Execute Exper +----------------+    +------------+
+          +-------------> | Experiment Ctr |<-->| Iteration, |
+          |               +----------------+    | Metrics    |
+          |                                     +------------+
+          |                      Container      
+          | Output Results +-------------------+    +-------------+
+          +------------->  | Results Processor |<-->| Processing, |
+                           +-------------------+    | Stats, LaTeX|
+                                                    +-------------+
+  ]]></artwork>
+</figure>
 
 <section anchor="CODEF-Bench">
 <name>CODEF Benchmarking and CNI Support</name>
